@@ -44,6 +44,7 @@
     "eslint": "^8.42.0",
     "eslint-config-next": "^13.4.4",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-disable-autofix": "^3.1.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^7.0.4",
