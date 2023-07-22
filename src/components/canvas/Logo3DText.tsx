@@ -1,5 +1,7 @@
+import { MeshTransmissionMaterial } from '@react-three/drei';
 import { extend, useFrame } from '@react-three/fiber';
 import { transform, useSpring } from 'framer-motion';
+import { useControls } from 'leva';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
@@ -25,6 +27,28 @@ const Logo3DText: FC<Logo3DTextProps> = ({ height, width, top, left }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const springX = useSpring(0);
   const springY = useSpring(0);
+  const config = useControls({
+    meshPhysicalMaterial: false,
+    transmissionSampler: false,
+    backside: true,
+    backsideThickness: { value: 2, min: -10, max: 10 },
+    samples: { value: 10, min: 0, max: 32, step: 1 },
+    resolution: { value: 2048, min: 256, max: 2048, step: 256 },
+    backsideResolution: { value: 1024, min: 32, max: 2048, step: 256 },
+    transmission: { value: 1, min: 0, max: 1 },
+    roughness: { value: 0.0, min: 0, max: 1, step: 0.01 },
+    ior: { value: 1.5, min: 1, max: 5, step: 0.01 },
+    thickness: { value: 0.25, min: 0, max: 10, step: 0.01 },
+    chromaticAberration: { value: 0.4, min: 0, max: 1 },
+    anisotropy: { value: 0.3, min: 0, max: 1, step: 0.01 },
+    distortion: { value: 0.0, min: 0, max: 1, step: 0.01 },
+    distortionScale: { value: 0.3, min: 0.01, max: 1, step: 0.01 },
+    temporalDistortion: { value: 0.65, min: 0, max: 1, step: 0.01 },
+    attenuationDistance: { value: 0.5, min: 0, max: 2.5, step: 0.01 },
+    clearcoat: { value: 0, min: 0, max: 1 },
+    attenuationColor: '#ffffff',
+    color: 'white',
+  });
 
   extend({ TextGeometry });
 
@@ -34,7 +58,7 @@ const Logo3DText: FC<Logo3DTextProps> = ({ height, width, top, left }) => {
       new TextGeometry('aplyd', {
         font,
         size: 1,
-        height: 1,
+        height: 0.75,
       }),
     [font]
   );
@@ -114,7 +138,7 @@ const Logo3DText: FC<Logo3DTextProps> = ({ height, width, top, left }) => {
 
   return (
     <mesh position={[0, 0, 0]} ref={meshRef} geometry={geometry}>
-      <meshStandardMaterial attach='material' />
+      <MeshTransmissionMaterial {...config} />
     </mesh>
   );
 };
