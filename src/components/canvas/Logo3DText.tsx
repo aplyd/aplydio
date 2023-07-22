@@ -94,10 +94,8 @@ const Logo3DText: FC<Logo3DTextProps> = ({ height, width, top, left }) => {
 
     const { relativeMouseX, relativeMouseY } = relativeMousePosition;
 
-    const xTransformer =
-      relativeMouseX < width && transform([0, width], [-1, 1]);
-    const yTransformer =
-      relativeMouseX < height && transform([0, height], [-1, 1]);
+    const xTransformer = transform([0, width], [-1, 1]);
+    const yTransformer = transform([0, height], [-1, 1]);
 
     if (xTransformer) {
       const animatedX = xTransformer(relativeMouseX);
