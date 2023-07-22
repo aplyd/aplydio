@@ -5,7 +5,7 @@ import { CubeTextureLoader } from 'three';
 
 import Environment from '@/components/canvas/Environment';
 import Lights from '@/components/canvas/Lights';
-import Logo3DText from '@/components/canvas/Logo3DText';
+import Scene from '@/components/canvas/Scene';
 
 const Hero: FC = () => {
   const [containerDims, setContainerDims] = useState<{
@@ -60,7 +60,7 @@ const Hero: FC = () => {
         >
           <Environment cubeTexture={cubeTexture} />
           <Lights />
-          <Logo3DText
+          <Scene
             height={containerDims.height}
             width={containerDims.width}
             top={containerDims.top}

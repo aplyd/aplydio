@@ -1,6 +1,6 @@
 import { MeshTransmissionMaterial } from '@react-three/drei';
 import { extend, useFrame } from '@react-three/fiber';
-import { transform, useSpring } from 'framer-motion';
+import { useSpring } from 'framer-motion';
 import { useControls } from 'leva';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
@@ -9,21 +9,12 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import poppins from '../../../public/fonts/Poppins_Regular.json';
 
 interface Logo3DTextProps {
-  height: number;
-  width: number;
-  left: number;
-  top: number;
+  transformedX: number;
+  transformedY: number;
 }
 
-const Logo3DText: FC<Logo3DTextProps> = ({ height, width, top, left }) => {
+const Logo3DText: FC<Logo3DTextProps> = ({ transformedX, transformedY }) => {
   const [geometry, setGeometry] = useState<TextGeometry | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [scroll, setScroll] = useState(0);
-  const [relativeMousePosition, setRelativeMousePosition] = useState({
-    relativeMouseX: 0,
-    relativeMouseY: 0,
-  });
-  const prevScroll = useRef(scroll);
   const meshRef = useRef<THREE.Mesh>(null);
   const springX = useSpring(0);
   const springY = useSpring(0);
@@ -72,66 +63,15 @@ const Logo3DText: FC<Logo3DTextProps> = ({ height, width, top, left }) => {
     return () => geo.dispose();
   }, [geometry, geo]);
 
-  // mouse position
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      const { clientX, clientY } = event;
-      if (clientX > 0 || clientY > 0) {
-        setMousePosition({ x: clientX, y: clientY });
-      }
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-
-  // scroll position
-  useEffect(() => {
-    const handleScroll = () => {
-      if (prevScroll.current !== window.scrollY) {
-        setScroll(window.scrollY);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // calculate relative position
-  useEffect(() => {
-    const { x, y } = mousePosition;
-
-    if (x && y) {
-      const relativeX = x - left;
-      const relativeY = y - top + scroll;
-
-      setRelativeMousePosition({
-        relativeMouseX: relativeX,
-        relativeMouseY: relativeY,
-      });
-    }
-  }, [mousePosition, scroll, left, top]);
-
   // animate rotation
   useFrame(() => {
     if (!meshRef.current) return;
 
-    const { relativeMouseX, relativeMouseY } = relativeMousePosition;
+    springX.set(transformedX);
+    meshRef.current.rotation.x = springY.get() / 2;
 
-    const xTransformer = transform([0, width], [-1, 1]);
-    const yTransformer = transform([0, height], [-1, 1]);
-
-    if (xTransformer) {
-      const animatedX = xTransformer(relativeMouseX);
-      springX.set(animatedX);
-      meshRef.current.rotation.x = springY.get() / 2;
-    }
-
-    if (yTransformer) {
-      const animatedY = yTransformer(relativeMouseY);
-      springY.set(animatedY);
-      meshRef.current.rotation.y = springX.get() / 2;
-    }
+    springY.set(transformedY);
+    meshRef.current.rotation.y = springX.get() / 2;
   });
 
   if (!geometry) return null;
