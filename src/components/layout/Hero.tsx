@@ -1,6 +1,9 @@
 import { Canvas } from '@react-three/fiber';
+import { Perf } from 'r3f-perf';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { CubeTextureLoader } from 'three';
 
+import Environment from '@/components/canvas/Environment';
 import Lights from '@/components/canvas/Lights';
 import Logo3DText from '@/components/canvas/Logo3DText';
 
@@ -16,7 +19,11 @@ const Hero: FC = () => {
     top: 0,
     left: 0,
   });
+  const [cubeTexture, setCubeTexture] = useState<THREE.CubeTexture | null>(
+    null
+  );
   const ref = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderGeo = useMemo(
     () => containerDims.height > 0 && containerDims.height > 0,
     [containerDims]
@@ -26,6 +33,17 @@ const Hero: FC = () => {
     if (ref.current) {
       const { height, width, top, left } = ref.current.getBoundingClientRect();
       setContainerDims({ height, width, top, left });
+      new CubeTextureLoader().load(
+        [
+          '/cubeTexture.jpg',
+          '/cubeTexture.jpg',
+          '/cubeTexture.jpg',
+          '/cubeTexture.jpg',
+          '/cubeTexture.jpg',
+          '/cubeTexture.jpg',
+        ],
+        (texture) => setCubeTexture(texture)
+      );
     }
   }, [ref]);
 
@@ -34,8 +52,13 @@ const Hero: FC = () => {
       className='min-h-[800px] bg-gradient-to-br flex justify-center content-center'
       ref={ref}
     >
-      {renderGeo && (
-        <Canvas style={{ height: '800px' }}>
+      {renderGeo && cubeTexture && (
+        <Canvas
+          style={{ height: '800px' }}
+          camera={{ fov: 35 }}
+          ref={canvasRef}
+        >
+          <Environment cubeTexture={cubeTexture} />
           <Lights />
           <Logo3DText
             height={containerDims.height}
@@ -43,6 +66,7 @@ const Hero: FC = () => {
             top={containerDims.top}
             left={containerDims.left}
           />
+          <Perf position='top-left' />
         </Canvas>
       )}
     </div>
