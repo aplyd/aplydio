@@ -3,11 +3,12 @@ import { Perf } from 'r3f-perf';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { CubeTextureLoader } from 'three';
 
-import Environment from '@/components/canvas/Environment';
-import Lights from '@/components/canvas/Lights';
+import useTransformedRelativeMousePosition from '@/hooks/useTransformedRelativeMousePosition';
+
 import Scene from '@/components/canvas/Scene';
 
 const Hero: FC = () => {
+  const ref = useRef<HTMLDivElement | null>(null);
   const [containerDims, setContainerDims] = useState<{
     height: number;
     width: number;
@@ -22,12 +23,13 @@ const Hero: FC = () => {
   const [cubeTexture, setCubeTexture] = useState<THREE.CubeTexture | null>(
     null
   );
-  const ref = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderGeo = useMemo(
     () => containerDims.height > 0 && containerDims.height > 0,
     [containerDims]
   );
+  const { transformedX, transformedY } =
+    useTransformedRelativeMousePosition(containerDims);
 
   useEffect(() => {
     if (ref.current) {
@@ -47,6 +49,8 @@ const Hero: FC = () => {
     }
   }, [ref]);
 
+  // console.log(transformedX, transformedY);
+
   return (
     <div
       className='min-h-[800px] bg-gradient-to-br flex justify-center content-center'
@@ -58,13 +62,10 @@ const Hero: FC = () => {
           camera={{ fov: 35 }}
           ref={canvasRef}
         >
-          <Environment cubeTexture={cubeTexture} />
-          <Lights />
           <Scene
-            height={containerDims.height}
-            width={containerDims.width}
-            top={containerDims.top}
-            left={containerDims.left}
+            transformedX={transformedX}
+            transformedY={transformedY}
+            cubeTexture={cubeTexture}
           />
           <Perf position='top-left' />
         </Canvas>
