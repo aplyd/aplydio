@@ -7,7 +7,6 @@ const Environment: FC<{ cubeTexture: THREE.CubeTexture }> = ({
   const { scene } = useThree();
 
   useEffect(() => {
-    // scene.backgroundBlurriness = 0.5;
     scene.background = cubeTexture;
   }, [scene, cubeTexture]);
 
