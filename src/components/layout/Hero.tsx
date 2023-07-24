@@ -59,8 +59,8 @@ const Hero: FC = () => {
       {renderGeo && cubeTexture && (
         <Canvas
           style={{ height: '800px' }}
-          camera={{ fov: 35 }}
           ref={canvasRef}
+          camera={{ fov: 50 }}
         >
           <Scene
             transformedX={transformedX}
