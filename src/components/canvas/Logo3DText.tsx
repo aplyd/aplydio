@@ -13,6 +13,8 @@ interface Logo3DTextProps {
   transformedY: number;
 }
 
+const ROTATION_STRENGTH = 1;
+
 const Logo3DText: FC<Logo3DTextProps> = ({ transformedX, transformedY }) => {
   const [geometry, setGeometry] = useState<TextGeometry | null>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -68,10 +70,10 @@ const Logo3DText: FC<Logo3DTextProps> = ({ transformedX, transformedY }) => {
     if (!meshRef.current) return;
 
     springX.set(transformedX);
-    meshRef.current.rotation.x = springY.get() / 2;
+    meshRef.current.rotation.x = (springY.get() / 2) * ROTATION_STRENGTH;
 
     springY.set(transformedY);
-    meshRef.current.rotation.y = springX.get() / 2;
+    meshRef.current.rotation.y = (springX.get() / 2) * ROTATION_STRENGTH;
   });
 
   if (!geometry) return null;
